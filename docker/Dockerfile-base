@@ -1,0 +1,18 @@
+FROM ruby:2.6.10
+MAINTAINER Larry Loi<larry.loi@gamesourcecloud.com>
+
+RUN apt-get update && \
+    apt-get install -y mysql-common apt-utils wget netcat vim curl git bsd-mailx nodejs libv8-dev curl && \
+    apt-get clean
+
+
+### Setup Work Diretory
+ENV REL_PATH=/app
+RUN mkdir $REL_PATH
+WORKDIR $REL_PATH
+ADD ./Makefile $REL_PATH
+
+### build image for running on K8S; and pass command into container by vaiables
+#ENTRYPOINT ["/bin/bash", "-c"]
+
+LABEL application=das-base
