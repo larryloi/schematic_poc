@@ -7,15 +7,33 @@ namespace :db do
     namespace :migrate do
       Sequel.extension :migration
 
+
       task :connect do
-        DB = Sequel.connect( :adapter  => 'tinytds',
-                             :host     => ENV['DB_HOST'],
-                             :database => ENV['DB_DATABASE'],
-                             :user     => ENV['DB_USER'],
-                             :password => ENV['DB_PASSWORD'],
-                             :port     => ENV['DB_PORT'],
-                             :identifier_input_method => nil
-                            )
+        case ENV['DB_ADAPTER']
+        when 'mysql2'
+          DB = Sequel.connect(
+            adapter: 'mysql2',
+            host: ENV['DB_HOST'],
+            database: ENV['DB_DATABASE'],
+            user: ENV['DB_USER'],
+            password: ENV['DB_PASSWORD'],
+            port: ENV['DB_PORT'],
+            fractional_seconds: ENV['FRACTIONAL_SECONDS'] == "" ? 'true' : ENV['FRACTIONAL_SECONDS'],
+            encoding: ENV['ENCODING'] == "" ? 'utf8mb4' : ENV['ENCODING']
+          )
+        when 'tinytds'
+          DB = Sequel.connect(
+            adapter: 'tinytds',
+            host: ENV['DB_HOST'],
+            database: ENV['DB_DATABASE'],
+            user: ENV['DB_USER'],
+            password: ENV['DB_PASSWORD'],
+            port: ENV['DB_PORT'],
+            identifier_input_method: nil
+          )
+        else
+          raise "Unsupported adapter: #{ENV['DB_ADAPTER']}"
+        end
       end
 
       desc 'Perform migration reset (full erase and migration up).'

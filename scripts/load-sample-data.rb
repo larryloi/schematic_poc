@@ -4,13 +4,14 @@ require 'json'
 require 'yaml'
 require 'mysql2'
 require 'sequel'
+require 'tiny_tds'
 
     def drop_fk
         ### Dropping table foreign key
         puts "=================================================================\n\n"
         puts "Dropping Foreign keys before loading data ...\n\n"
         fks = []
-        fks = DB.fetch("SELECT TABLE_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '#{$mysql_db}' GROUP BY TABLE_NAME, CONSTRAINT_NAME").all
+        fks = DB.fetch("SELECT TABLE_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '#{$db}' GROUP BY TABLE_NAME, CONSTRAINT_NAME").all
         fks.each do |fk|
           DB.run("ALTER TABLE #{fk[:TABLE_NAME]} DROP FOREIGN KEY #{fk[:CONSTRAINT_NAME]}")
         end
@@ -42,6 +43,14 @@ require 'sequel'
             puts "Reading data from file #{f} ...\n\n"
             jcontent = JSON.parse(content)
 
+            if ENV['DB_ADAPTER'] == 'tinytds'
+              sqlserver_set_identity_insert(jcontent, 'ON')
+              #jcontent.each do |tbl,row|
+              #  puts "SET IDENTITY_INSERT #{tbl} ON"
+              #  DB.run("SET IDENTITY_INSERT #{tbl} ON")
+              #end
+            end
+
             jcontent.each do |tbl,row|
                 puts "Loading data into Table: #{tbl} ...\n\n"
                 row.each do |r|
@@ -51,30 +60,61 @@ require 'sequel'
                     end
                   end
                   DB[tbl.to_sym].insert(r)
-
                 end
             end
+
+            if ENV['DB_ADAPTER'] == 'tinytds'
+              sqlserver_set_identity_insert(jcontent, 'OFF')
+              #jcontent.each do |tbl,row|
+              #  puts "SET IDENTITY_INSERT #{tbl} OFF"
+              #  DB.run("SET IDENTITY_INSERT #{tbl} OFF")
+              #end
+            end
+
+        end
+    end
+
+    def sqlserver_set_identity_insert(js, switch)
+        js.each do |tbl, row|
+          puts "SET IDENTITY_INSERT #{tbl} #{switch}\n\n"
+          DB.run("SET IDENTITY_INSERT #{tbl} #{switch}")
         end
     end
 
 ### Main
     #DB = Sequel.connect('mysql2://chronos:chronos@hq-int-ppms-vdb01.laxino.local:3306/i2_ppms_dev1')
-    DB = Sequel.connect( :adapter  => 'mysql2',
-                         :host     => ENV['MYSQL_HOST'],
-                         :database => ENV['MYSQL_DATABASE'],
-                         :user     => ENV['MYSQL_USER'],
-                         :password => ENV['MYSQL_PASSWORD'],
-                         :port     => ENV['MYSQL_PORT'],
-                         :fractional_seconds  => ENV['FRACTIONAL_SECONDS'] || 'true',
-                         :encoding => ENV['ENCODING'] || 'utf8mb4'
-                       )
+    case ENV['DB_ADAPTER']
+    when 'mysql2'
+      DB = Sequel.connect(
+        adapter: 'mysql2',
+        host: ENV['DB_HOST'],
+        database: ENV['DB_DATABASE'],
+        user: ENV['DB_USER'],
+        password: ENV['DB_PASSWORD'],
+        port: ENV['DB_PORT'],
+        fractional_seconds: ENV['FRACTIONAL_SECONDS'] == "" ? 'true' : ENV['FRACTIONAL_SECONDS'],
+        encoding: ENV['ENCODING'] == "" ? 'utf8mb4' : ENV['ENCODING']
+      )
+    when 'tinytds'
+      DB = Sequel.connect(
+        adapter: 'tinytds',
+        host: ENV['DB_HOST'],
+        database: ENV['DB_DATABASE'],
+        user: ENV['DB_USER'],
+        password: ENV['DB_PASSWORD'],
+        port: ENV['DB_PORT'],
+        identifier_input_method: nil
+      )
+    else
+      raise "Unsupported adapter: #{ENV['DB_ADAPTER']}"
+    end
 
     $sample_data_file = []
     $sample_data_file = Dir.glob("sample_data/#{ENV['IMAGE']}/#{ENV['DB_TARGET']}/*.json").sort
     $sample_data_file_reverse = Dir.glob("sample_data/#{ENV['IMAGE']}/#{ENV['DB_TARGET']}/*.json").sort.reverse
-    $mysql_db = ENV['MYSQL_DATABASE']
+    $db = ENV['DB_DATABASE']
 
-    drop_fk    
+    #drop_fk    
     remove_data
     load_data
     puts "Done ...\n\n"

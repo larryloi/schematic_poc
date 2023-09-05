@@ -10,7 +10,7 @@ gem 'mysql2', '>= 0.5.1'
 gem 'jwt', '=2.1.0'
 gem 'sysrandom'
 gem 'sequel', '4.44.0'
-gem 'tiny_tds'
+gem 'tiny_tds', '2.1.5'
 
 gem 'irb'
 
