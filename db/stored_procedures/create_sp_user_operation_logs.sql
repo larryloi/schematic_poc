@@ -1,7 +1,7 @@
 CREATE PROCEDURE [dbo].[sp_user_operation_logs]
 AS
 BEGIN
-    MERGE destination_logs AS target
+    MERGE user_operation_logs AS target
     USING (
         SELECT u.name as username, l.operation, l.operated_at, l.created_at, l.updated_at 
         FROM schematic_src_test.dbo.Users u

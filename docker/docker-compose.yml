@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  app:
+    image: "${IMAGE}:${TAG}"
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+    depends_on:
+      - db
+    networks:
+      - integration
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2017-CU24-ubuntu-16.04
+    hostname: "${DST_DB_HOST}"
+    env_file:
+      - .env
+    container_name: schematic-db
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: Vg6gEcSGL7p8KbCN
+      # MSSQL_PID: Developer
+      MSSQL_DATABASE: schematic_test_dst
+      MSSQL_COLLATION: Latin1_General_CS_AS
+      MSSQL_MEMORY_LIMIT_MB: 2048
+      MSSQL_AGENT_ENABLED: 1
+    ports:
+      - 1433:1433
+    volumes:
+      - ../db/mssql-init:/mssql-init
+      - vol-db:/var/opt/mssql/data
+    networks:
+      - integration
+
+
+
+volumes:
+  vol-db:
+
+networks:
+  integration:
+    external: true
+
+

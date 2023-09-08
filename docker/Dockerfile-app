@@ -1,4 +1,4 @@
-FROM ruby:2.6
+FROM ruby:2.6.10
 LABEL maintainer="larry.loi@pm.me"
 
 RUN apt-get update && \
@@ -15,6 +15,9 @@ ADD . /app
 RUN /bin/bash -l -c "bundle install"
 
 # CMD $REL_PATH/start-archive.sh
-ENTRYPOINT ["/bin/bash", "-c"]
+#ENTRYPOINT ["/bin/bash", "-c"]
+# CMD ["rake", "db:migrate"]
+CMD ["sleep", "infinity"]
+
 
 LABEL application=schematic
