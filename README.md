@@ -94,7 +94,7 @@ In development phase, we hope to have a environment that build up fast and work 
   ```
 
   ### Objectives
-      It will be assumpted 2 SQL server db required. For example source DB and destination DB. and some source/ destincation tables are required for ETL job logic development. We will only have to develop, schema migration scripts, ETL job logic, Agent job configuration. below some file spec we have to realise. 
+    It will be assumpted 2 SQL server db required. For example source DB and destination DB. and some source/ destincation tables are required for ETL job logic development. We will only have to develop, schema migration scripts, ETL job logic, Agent job configuration. below some file spec we have to realise. 
 
   #### .env (environment file)
       that contains our necessary environment variables during our development or test like below.
