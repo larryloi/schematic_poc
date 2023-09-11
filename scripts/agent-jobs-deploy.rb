@@ -4,8 +4,8 @@ require 'erb'
 
 # Load configuration from YAML file
 job_config_file='/app/config/agent_jobs.yml'
-#config = YAML.load_file(job_config_file)
 config = YAML.load(ERB.new(File.read(job_config_file)).result)
+puts "  >> Loading configuration from #{job_config_file}\n---------------------------------------------\n"
 
 # Begin transaction
 DB.transaction do
@@ -23,8 +23,8 @@ DB.transaction do
 
     # Check if job exists
     if DB.fetch("SELECT name FROM msdb.dbo.sysjobs WHERE name=?", job_name).count > 0
-      # Delete job
 
+      # Delete job if exists
       DB.call_mssql_sproc(:sp_delete_job, args:{
         'job_name' => job_name
       })
@@ -40,7 +40,8 @@ DB.transaction do
       })
     end
 
-
+    # Creating job
+    puts "  >> Creating job #{job_name}"
     job_id = DB.call_mssql_sproc(:sp_add_job, args: {
       'job_name' => job_name,
       'enabled' => job['enabled'],
@@ -62,6 +63,7 @@ DB.transaction do
       step = job['step_general'].merge(step)
 
       # Add job step
+      puts "    >> Adding step #{step['name']}"
       DB.call_mssql_sproc(:sp_add_jobstep, args: {
         'job_id' => job_id,
         'step_id' => step['id'],
@@ -86,6 +88,7 @@ DB.transaction do
 
 
     # Add schedule to the job
+    puts "  >> Adding schedule to the job #{job_name}"
     DB.call_mssql_sproc(:sp_add_jobschedule, args: {
       'job_id' => job_id,
       #':schedule_uid, type: :output},
@@ -104,6 +107,7 @@ DB.transaction do
     })
 
     # Add server to the job
+    puts "  >> Adding server to the job #{job_name}\n---------------------------------------------\n"
     DB.call_mssql_sproc(:sp_add_jobserver, args: {
       'job_id' => job_id.to_s,
       'server_name' => '(local)'

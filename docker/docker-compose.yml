@@ -5,12 +5,17 @@ services:
     image: "${IMAGE}:${TAG}"
     env_file:
       - .env
+    hostname: "${IMAGE}_app"
+    container_name: "${IMAGE}_app"
     stdin_open: true
     tty: true
+    volumes:
+      - ../sample_data:/app/sample_data
     depends_on:
       - db
     networks:
       - integration
+    entrypoint: /bin/bash
 
   db:
     image: mcr.microsoft.com/mssql/server:2017-CU24-ubuntu-16.04
@@ -18,26 +23,37 @@ services:
     env_file:
       - .env
     container_name: schematic-db
+    #user: root
     environment:
       ACCEPT_EULA: Y
       SA_PASSWORD: Vg6gEcSGL7p8KbCN
       # MSSQL_PID: Developer
       MSSQL_DATABASE: schematic_test_dst
-      MSSQL_COLLATION: Latin1_General_CS_AS
+      MSSQL_SCHEMA: schematic
+      #MSSQL_COLLATION: Latin1_General_CS_AS
       MSSQL_MEMORY_LIMIT_MB: 2048
       MSSQL_AGENT_ENABLED: 1
+      MSSQL_PID: "Developer"
     ports:
       - 1433:1433
     volumes:
+      - schematic_db:/var/opt/mssql
       - ../db/mssql-init:/mssql-init
-      - vol-db:/var/opt/mssql/data
+      #- ../db/mssql-init:/docker-entrypoint-initdb.d
     networks:
       - integration
+    #command:
+    #  - /mssql-init/configure-db.sh
+    #  - /opt/mssql/bin/sqlservr
+    #  - -i
+    #  - /mssql-init/configure-db.sh
+      #- /schema.sql
+      
 
 
 
 volumes:
-  vol-db:
+  schematic_db:
 
 networks:
   integration:

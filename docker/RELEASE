@@ -1,3 +1,1 @@
-#REPO_PATH=docker-repos:8123/chronos2/
-IMAGE=schematic
-TAG=0.1.0
+../RELEASE

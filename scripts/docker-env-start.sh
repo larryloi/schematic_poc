@@ -9,34 +9,30 @@
 docker network create --driver bridge integration || true
 
 #docker volume create --driver local --name opsta-db || true
-  START_SRC()
+  START_DB()
     {
-      HILN "Starting up source database ...\n"
-      docker-compose up -d src-db
+      HILN "Starting up database ...\n"
+      docker-compose up -d db
 
-      #docker-compose up -d opsta-db
+      docker-compose exec db /mssql-init/wait-for-it.sh db:1433 -t 60 -- /mssql-init/configure-db.sh
 
-      HILN "Running DB migration for source database ...\n"
-      make src.db.up
-
-      HILN "Loading Sample data into source database ...\n"
-      make src.db.load
     }
 
-  START_DST()
-    {
-      HILN "Running DB migration for destination database ...\n"
-      make dst.db.up
-
-      ### For migrating particular db version; please specify like this
-      ### make dst.db.to DBVERSION=202009211038
-    }
 
   START_APP()
     {
       HILN "Starting up archive service ...\n"
-      docker-compose up -d app
+      #docker-compose up -d app
+      HILN "Running DB migration for source database ...\n"
+      make src.sch.up
 
+      HILN "Loading Sample data into source database ...\n"
+      make src.data.load
+
+      HILN "Running DB migration for destination database ...\n"
+      make dst.sch.up
+
+      make job.deploy
       HILN "Running containers.\n"; docker-compose ps; HILN "Docker volumes.\n"; docker volume ls
     }
 
@@ -53,6 +49,5 @@ docker network create --driver bridge integration || true
 ############
 
   #BUILD_IMAGE
-  #START_SRC
-  #START_DST
-  START_APP
+  START_DB
+  #START_APP
