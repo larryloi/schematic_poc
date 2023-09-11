@@ -199,7 +199,7 @@ docker environment startup and shutdown scripts.
   
 The above file we will use always during development.
 
-
+---
 ### Getting start your development.
 
 #### Start up your own environment.
@@ -277,9 +277,9 @@ In the root path. there is a symbolic link which is storing your sample data
         ├── 001_Users.json
         └── 002_user_operation_logs.json
 ```
-        We could customise our own sample data as our expect. data file is json format. The sample data loader will read the data file by it's filename sequence; 001_Users.json will be loaded first then 002_user_operation_logs.json in the above case. we may control the table dependency.
+We could customise our own sample data as our expect. data file is json format. The sample data loader will read the data file by it's filename sequence; 001_Users.json will be loaded first then 002_user_operation_logs.json in the above case. we may control the table dependency.
 
-        the datafile sample as below; the key name on the top level indicate the table name. the loader will load it array of value into table accordingly.
+the datafile sample as below; the key name on the top level indicate the table name. the loader will load it array of value into table accordingly.
 
 ```json
 {
@@ -440,7 +440,7 @@ cd docker
 
 make job.deploy    # Deploying job into target DB
 ```
-
+---
 ## Build your docker images
 There is a RELEASE file under the root path that control the image name and tag
 ```bash
@@ -453,7 +453,7 @@ Before you build the images; ensure what the image name ang tag name in the RELE
 make build
 ```
 
-
+---
 ## Deploy to QA and Production environments
 In QA and production environments which is kubernetes environments that need us to provide below stuff to put into config map, so that the container can be kicked start .
 
