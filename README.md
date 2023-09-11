@@ -97,7 +97,7 @@ In development phase, we hope to have a environment that build up fast and work 
   It will be assumpted 2 SQL server db required. For example source DB and destination DB. and some source/ destincation tables are required for ETL job logic development. We will only have to develop, schema migration scripts, ETL job logic, Agent job configuration. below some file spec we have to realise. 
 
   #### .env (environment file)
-      that contains our necessary environment variables during our development or test like below.
+  that contains our necessary environment variables during our development or test like below.
 
   ```bash
   IMAGE=schematic
@@ -117,9 +117,9 @@ SRC_SCHEMA_TABLE=schema_migrations
   ```
 
   #### docker-compose.yml
-      https://docs.docker.com/get-started/08_using_compose/
+  https://docs.docker.com/get-started/08_using_compose/
 
-      It lets you define and run multiple Docker containers using a single file. This file uses the YAML syntax. It can be used to depoy both stateless and stateful applications
+  It lets you define and run multiple Docker containers using a single file. This file uses the YAML syntax. It can be used to depoy both stateless and stateful applications
 
   ```yaml
   version: "3"
@@ -150,9 +150,9 @@ services:
       ...
   ```
   #### Makefile
-      https://opensource.com/article/18/8/what-how-makefile
+  https://opensource.com/article/18/8/what-how-makefile
 
-      This is a handy automation tool that you could customize your command aliases. and make you development work efficiently.
+  This is a handy automation tool that you could customize your command aliases. and make you development work efficiently.
 
 below is sample contents in Makefile
 ```Makefile
@@ -181,49 +181,49 @@ rmi:
   ...
 ```
 
-    In this sample, 
+In this sample, 
 
-    if you would like to build a docker image. 
+if you would like to build a docker image. 
 
-    you just only type "make build". 
+you just only type "make build". 
 
-    then make command will execute "docker build -f Dockerfile app -t $(IMAGE):$(TAG)"
+then make command will execute "docker build -f Dockerfile app -t $(IMAGE):$(TAG)"
 
-    and so on
+and so on
 
 
-  #### docker-env-start.sh and docker-env-stop.sh  (Shell scripts)
-    docker environment startup and shutdown scripts.
+#### docker-env-start.sh and docker-env-stop.sh  (Shell scripts)
+docker environment startup and shutdown scripts.
 
 
   
-  The above file we will use always during development.
+The above file we will use always during development.
 
 
 ### Getting start your development.
 
-  #### Start up your own environment.
-  Before your new development. we have to prepare DB source and destination. To achieve it, run the below.
-  After executed the below commands, SQL Server will be bring online. 
-  Some 
+#### Start up your own environment.
+Before your new development. we have to prepare DB source and destination. To achieve it, run the below.
+After executed the below commands, SQL Server will be bring online. 
+
   ```bash
   cd docker
   bash ./scripts/docker-env-start.sh
   ```
 
-  #### Prepare your schema migration scripts and stored procedure
-    The below paths save our schema migration scripts. which is ruby sequel syntax
+#### Prepare your schema migration scripts and stored procedure
+The below paths save our schema migration scripts. which is ruby sequel syntax
 
   - db/migrations/dst
   - db/migrations/src
 
 
-  File name kinda 20171013025857_create_network_codes.rb which
-  naming convertion is datetime with seconds precision then method and object name at the end.
+File name kinda 20171013025857_create_network_codes.rb which
+naming convertion is datetime with seconds precision then method and object name at the end.
 
-  http://sequel.jeremyevans.net/rdoc/files/doc/migration_rdoc.html
+http://sequel.jeremyevans.net/rdoc/files/doc/migration_rdoc.html
 
-  Sample migration script here
+Sample migration script here
   ```ruby
   Sequel.migration do
   up do
@@ -265,11 +265,11 @@ Schema migration meta will be saved in table [schema_migrations]; and you will s
 
 #### Prepare your sample data
 
-  In the root path. there is a symbolic link which is storing your sample data
+In the root path. there is a symbolic link which is storing your sample data
 
-  - sample_data -> ../schematic_sample_data
- 
-    the folder structure is like below
+- sample_data -> ../schematic_sample_data
+
+  the folder structure is like below
 ```
 .
 └── schematic
@@ -334,13 +334,13 @@ make src.data.load    # sample data load into source DB
 
 #### Prepare your Stored Procedure
 
-    After we have our sample data; we may start the ETL job development. and save the stored procedures into 
-    
-    - db/stored_procedures.
+After we have our sample data; we may start the ETL job development. and save the stored procedures into 
 
-    which is SQL syntax
+- db/stored_procedures.
 
-    To deploy your stored procedure, you have to write another schema migration script for this. for example you may create an migration script named 
+which is SQL syntax
+
+To deploy your stored procedure, you have to write another schema migration script for this. for example you may create an migration script named 
 
 - db/migrations/dst/20230905145601_create_sp_user_operation_logs.rb
 
