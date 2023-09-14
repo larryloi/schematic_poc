@@ -90,7 +90,7 @@ In development phase, we hope to have a environment that build up fast and work 
 ### How to use?
   #### Get the code from github
   ```bash
-  git clone git@github.com:larryloi/schematic.git
+  git clone https://github.com/larryloi/schematic.git
   ```
 
   ### Objectives
