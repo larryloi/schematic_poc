@@ -1,18 +1,29 @@
-require_relative 'db-connection'
+require_relative 'db_connection'
 require 'yaml'
 require 'erb'
 
-# Load configuration from YAML file
-job_config_file='/app/config/agent_jobs.yml'
-config = YAML.load(ERB.new(File.read(job_config_file)).result)
-puts "  >> Loading configuration from #{job_config_file}\n---------------------------------------------\n"
+
+# Load general configuration
+general_config_file = '/app/deploy/jobs/config/general.yml'
+general_config = YAML.load(ERB.new(File.read(general_config_file)).result)
+
+puts "  >> Loading general configuration from #{general_config_file}\n---------------------------------------------\n"
+
+# List of job config files
+job_config_files = Dir.glob('/app/deploy/jobs/config/job*.yml')
 
 # Begin transaction
 DB.transaction do
-  # Iterate over jobs
-  config['agent_jobs']['jobs'].each do |job|
-    # Merge job_general parameters with job parameters
-    job = config['agent_jobs']['job_general'].merge(job)
+  # Iterate over job config files
+  job_config_files.each do |job_config_file|
+    # Load job-specific configuration
+    job_config = YAML.load(ERB.new(File.read(job_config_file)).result)
+
+    puts "  >> Loading job-specific configuration from #{job_config_file}\n---------------------------------------------\n"
+
+    # Merge general parameters with job-specific parameters
+    # Job-specific parameters will overwrite general parameters if they exist
+    job = general_config.merge(job_config)
 
     # Set variables
     category_name = job['category_name']

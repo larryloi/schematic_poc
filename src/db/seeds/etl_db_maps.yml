@@ -1,0 +1,10 @@
+---
+etl_db_maps:
+  - id: 1
+    network_code_id: 1
+    description: Development for gaming
+    source_host: centos7
+    source_db: schematic_test_src
+    dest_host: centos7
+    dest_db: schematic_test_dst
+    source_dsn: schematic_test_src

@@ -72,8 +72,8 @@ namespace :db do
           def run
             migration_tuples.each do |m, f, direction|
               t = Time.now
-              puts '*' * 50
-              puts f
+              #puts '*' * 50
+              puts "#{f} \n\n"
               db.log_info("Begin applying migration #{f}, direction: #{direction}")
               checked_transaction(m) do
                 m.apply(db, direction)

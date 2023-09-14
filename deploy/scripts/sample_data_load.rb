@@ -5,7 +5,7 @@ require 'yaml'
 require 'mysql2'
 require 'sequel'
 require 'tiny_tds'
-require_relative 'db-connection'
+require_relative 'db_connection'
 
     def drop_fk
         ### Dropping table foreign keys
@@ -72,10 +72,10 @@ require_relative 'db-connection'
 ### Main
     #DB = Sequel.connect('mysql2://chronos:chronos@hq-int-ppms-vdb01.laxino.local:3306/i2_ppms_dev1')
 
-
+    $sample_data_path=ARGV[0]
     $sample_data_file = []
-    $sample_data_file = Dir.glob("sample_data/#{ENV['IMAGE']}/#{ENV['DB_TARGET']}/*.json").sort
-    $sample_data_file_reverse = Dir.glob("sample_data/#{ENV['IMAGE']}/#{ENV['DB_TARGET']}/*.json").sort.reverse
+    $sample_data_file = Dir.glob("#{$sample_data_path}/*.json").sort
+    $sample_data_file_reverse = Dir.glob("#{$sample_data_path}/*.json").sort.reverse
     $db = ENV['DB_DATABASE']
 
     #drop_fk    

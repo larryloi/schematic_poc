@@ -5,10 +5,10 @@
       echo "=="
       echo "== ${1} "
       echo "=="
-      echo "== Usage: bash scripts/schema-migrate-up.sh <src|dst> <up|down|to> [migration version]"
-      echo "== For example: bash scripts/schema-migrate.sh src up"
-      echo "== For example: bash scripts/schema-migrate.sh dst down"
-      echo "== For example: bash scripts/schema-migrate.sh dst to 201908280902"
+      echo "== Usage: bash scripts/schema_migrate.sh <src|dst> <up|down|to> [migration version]"
+      echo "== For example: bash scripts/schema_migrate.sh src up"
+      echo "== For example: bash scripts/schema_migrate.sh dst down"
+      echo "== For example: bash scripts/schema_migrate.sh dst to 201908280902"
       echo "=="
       exit 1
     }

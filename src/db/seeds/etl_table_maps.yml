@@ -1,0 +1,27 @@
+---
+etl_table_maps:
+  - id: 1
+    transformer: user_operation_logs
+    etl_db_map_id: 1
+    data_process_interval: 10
+    large_data_process_interval: 60
+    recipients: larry.loi@pm.me
+    is_by_licensee: 0
+    etl_source_tables:
+      - table_name: Users
+      - table_name: user_operation_logs
+    etl_dest_tables:
+      - table_name: user_operation_logs
+
+  - id: 2
+    transformer: super_user_operation_logs
+    etl_db_map_id: 1
+    data_process_interval: 10
+    large_data_process_interval: 60
+    recipients: larry.loi@pm.me
+    is_by_licensee: 0
+    etl_source_tables:
+      - table_name: Users
+      - table_name: user_operation_logs
+    etl_dest_tables:
+      - table_name: super_user_operation_logs

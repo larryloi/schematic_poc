@@ -5,12 +5,11 @@ services:
     image: "${IMAGE}:${TAG}"
     env_file:
       - .env
+      - combined.env
     hostname: "${IMAGE}_app"
     container_name: "${IMAGE}_app"
     stdin_open: true
     tty: true
-    volumes:
-      - ../sample_data:/app/sample_data
     depends_on:
       - db
     networks:
@@ -38,8 +37,7 @@ services:
       - 1433:1433
     volumes:
       - schematic_db:/var/opt/mssql
-      - ../db/mssql-init:/mssql-init
-      #- ../db/mssql-init:/docker-entrypoint-initdb.d
+      - ../src/db/mssql-init/:/mssql-init
     networks:
       - integration
     #command:

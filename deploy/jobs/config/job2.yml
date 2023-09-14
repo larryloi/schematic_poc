@@ -1,0 +1,39 @@
+---
+  name: _Purge_Data
+  enabled: <%= ENV['JOB2_ENABLED'] || ENV['JOB_ENABLED'] || "true" %>
+  notify_level_email: <%= ENV['JOB2_NOTIFY_LEVEL_EMAIL'] || ENV['JOB_NOTIFY_LEVEL_EMAIL'] || "true" %>
+  notify_level_netsend: <%= ENV['JOB2_NOTIFY_LEVEL_NETSEND'] || ENV['JOB_NOTIFY_LEVEL_NETSEND'] || "true" %>
+  notify_level_page: <%= ENV['JOB2_NOTIFY_LEVEL_PAGE'] || ENV['JOB_NOTIFY_LEVEL_PAGE'] || "true" %>
+  delete_level: <%= ENV['JOB2_DELETE_LEVEL'] || ENV['JOB_DELETE_LEVEL'] || "true" %>
+  description: Purge_Data
+  category_name: _Data_Maintenance
+  owner_login_name: schematic
+  schedule_name: Test_job_schedule02
+  schedule_enabled: <%= ENV['JOB2_SCHEDULE_ENABLED'] || ENV['JOB_SCHEDULE_ENABLED'] || "true" %>
+  schedule_freq_type: 4 <%= ENV['JOB2_SCHEDULE_FREQ_TYPE'] || ENV['JOB_SCHEDULE_FREQ_TYPE'] || "4" %>                               # 1: Once, 4: Daily, 8: Weekly, 16: Monthly, 32: Monthly, relative to @freq_interval., 64: Run when the SQL Server Agent service starts, 128: Run when the computer is idle.
+  schedule_freq_interval: <%= ENV['JOB2_SCHEDULE_FREQ_INTERVAL'] || ENV['JOB_SCHEDULE_FREQ_INTERVAL'] || "1" %>                         # check https://learn.microsoft.com/en-us/sql/relational-databases/system-stored-procedures/sp-add-jobschedule-transact-sql?view=sql-server-ver16
+  schedule_freq_subday_type: <%= ENV['JOB2_SCHEDULE_FREQ_SUBDAY_TYPE'] || ENV['JOB_SCHEDULE_FREQ_SUBDAY_TYPE'] || "8" %>                   
+  schedule_freq_subday_interval: <%= ENV['JOB2_SCHEDULE_FREQ_SUBDAY_INTERVAL'] || ENV['JOB_SCHEDULE_FREQ_SUBDAY_INTERVAL'] || "1" %>
+  schedule_freq_relative_interval: <%= ENV['JOB2_SCHEDULE_FREQ_RELATIVE_INTERVAL'] || ENV['JOB_SCHEDULE_FREQ_RELATIVE_INTERVAL'] || "0" %>
+  schedule_freq_recurrence_factor: <%= ENV['JOB2_SCHEDULE_FREQ_RECURRENCE_FACTOR'] || ENV['JOB_SCHEDULE_FREQ_RECURRENCE_FACTOR'] || "0" %>
+  schedule_active_start_date: <%= ENV['JOB2_SCHEDULE_ACTIVE_START_DATE'] || ENV['JOB_SCHEDULE_ACTIVE_START_DATE'] || "20181010" %>
+  schedule_active_end_date: <%= ENV['JOB2_SCHEDULE_ACTIVE_END_DATE'] || ENV['JOB_SCHEDULE_ACTIVE_END_DATE'] || "99991231" %>
+  schedule_active_start_time: <%= ENV['JOB2_SCHEDULE_ACTIVE_START_TIME'] || ENV['JOB_SCHEDULE_ACTIVE_START_TIME'] || "600" %>
+  schedule_active_end_time: <%=  ENV['JOB2_SCHEDULE_ACTIVE_END_TIME'] || ENV['JOB_SCHEDULE_ACTIVE_END_TIME'] || "235959" %>
+  step_general:
+    cmdexec_success_code: 0
+    retry_attempts: 0
+    retry_interval: 0
+    os_run_priority: 0
+  job_steps:
+    - id: 1
+      name: Executing sp_user_operation_logs
+      on_success_action: 1                      # 1: Quit with success, 2: Quit with failure, 3: Go to next step, 4: Go to step @on_success_step_id
+      on_fail_action: 2                         # 1: Quit with success, 2: Quit with failure, 3: Go to next step, 4: Go to step @on_fail_step_id
+      os_run_priority: 0
+      subsystem: TSQL
+      command: |
+        EXEC sp_user_operation_logs;
+        GO;
+        SELECT GETDATE();
+        GO;

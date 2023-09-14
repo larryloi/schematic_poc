@@ -6,7 +6,6 @@ GEM
     irb (1.6.3)
       reline (>= 0.3.0)
     json (2.6.3)
-    jwt (2.1.0)
     language_server-protocol (3.17.0.3)
     lint_roller (1.1.0)
     minitest (5.19.0)
@@ -63,16 +62,15 @@ PLATFORMS
 
 DEPENDENCIES
   irb
-  jwt (= 2.1.0)
   minitest (~> 5.0)
-  mysql2 (>= 0.5.1)
+  mysql2 (~> 0.5)
   psych (= 5.0.1)
   rake (~> 13.0)
-  sequel (= 4.49.0)
+  sequel (~> 4.49)
   standard (~> 1.3)
   stringio (= 3.0.4)
   sysrandom
-  tiny_tds (= 2.1.5)
+  tiny_tds (~> 2.1)
 
 BUNDLED WITH
    1.17.2

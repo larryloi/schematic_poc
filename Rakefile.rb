@@ -7,6 +7,6 @@ require 'rake'
 require 'rake/testtask'
 #require 'rake/rdoctask'
 require 'rdoc/task'
-Dir.glob('tasks/*.rake').each { |r| import r }
+Dir.glob('deploy/tasks/*.rake').each { |r| import r }
 
 task :default => :spec

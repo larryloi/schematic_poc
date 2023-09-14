@@ -1,3 +1,9 @@
+IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_user_operation_logsA')
+BEGIN
+    DROP PROCEDURE sp_user_operation_logsA
+END
+GO
+
 CREATE PROCEDURE [dbo].[sp_user_operation_logsA]
 AS
 BEGIN

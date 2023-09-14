@@ -13,8 +13,10 @@
 
   SET_DB_VARIABLES()
     {
-      SAMPLE_DATA_BASE=sample_data
+      SAMPLE_DATA_BASE=src/sample_data
       export SAMPLE_DATA_PATH="${SAMPLE_DATA_BASE}/${IMAGE}/${DB_TARGET}"
+
+echo ${SAMPLE_DATA_PATH}
 
       if [[ "$DB_TARGET" == "dst" ]]; then
         export DB_ADAPTER=${DST_DB_ADAPTER}
@@ -47,5 +49,5 @@ export DB_TARGET=$1
      FAIL_EXIT "Missing parameters. "
   else
      SET_DB_VARIABLES
-     ruby scripts/sample-data-load.rb
+     ruby deploy/scripts/sample_data_load.rb ${SAMPLE_DATA_PATH}
   fi

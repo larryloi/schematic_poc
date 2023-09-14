@@ -32,5 +32,5 @@
 
 
      SET_DB_VARIABLES
-     ruby scripts/agent-jobs-deploy.rb
+     ruby deploy/scripts/agent_jobs_deploy.rb
 
