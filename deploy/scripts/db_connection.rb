@@ -2,31 +2,39 @@
 require 'sequel'
 require 'tiny_tds'
 
-case ENV['DB_ADAPTER']
-when 'mysql2'
-  DB = Sequel.connect(
-    adapter: 'mysql2',
-    host: ENV['DB_HOST'],
-    database: ENV['DB_DATABASE'],
-    user: ENV['DB_USER'],
-    password: ENV['DB_PASSWORD'],
-    port: ENV['DB_PORT'],
-    fractional_seconds: ENV['FRACTIONAL_SECONDS'] == "" ? 'true' : ENV['FRACTIONAL_SECONDS'],
-    encoding: ENV['ENCODING'] == "" ? 'utf8mb4' : ENV['ENCODING']
-  )
-when 'tinytds'
-  DB = Sequel.connect(
-    adapter: 'tinytds',
-    host: ENV['DB_HOST'],
-    database: ENV['DB_DATABASE'],
-    user: ENV['DB_USER'],
-    password: ENV['DB_PASSWORD'],
-    port: ENV['DB_PORT'],
-    identifier_input_method: nil
-    #identifier_output_method: nil,
-    #extension: identifier_mangling
-  )
-else
-  raise "Unsupported adapter: #{ENV['DB_ADAPTER']}"
-end
+#ENV.each do |key, value|
+#  if key.start_with?('DST') 
+#  #if key.end_with?('LEVEL')
+#    puts "#{key}: #{value}"
+#  end
+#end
 
+def db_connection(env)
+  db = nil
+  case env['DB_ADAPTER']
+  when 'mysql2'
+    db = Sequel.connect(
+      adapter: 'mysql2',
+      host: env['DB_HOST'],
+      database: env['DB_NAME'],
+      user: env['DB_USER'],
+      password: env['DB_PASSWORD'],
+      port: env['DB_PORT'],
+      fractional_seconds: env['FRACTIONAL_SECONDS'] == "" ? 'true' : env['FRACTIONAL_SECONDS'],
+      encoding: env['ENCODING'] == "" ? 'utf8mb4' : env['ENCODING']
+    )
+  when 'tinytds'
+    db = Sequel.connect(
+      adapter: 'tinytds',
+      host: env['DB_HOST'],
+      database: env['DB_NAME'],
+      user: env['DB_USER'],
+      password: env['DB_PASSWORD'],
+      port: env['DB_PORT'],
+      identifier_input_method: nil
+    )
+  else
+    raise "Unsupported adapter: #{env['DB_ADAPTER']}"
+  end
+  db
+end

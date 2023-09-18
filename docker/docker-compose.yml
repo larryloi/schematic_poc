@@ -8,6 +8,9 @@ services:
       - combined.env
     hostname: "${IMAGE}_app"
     container_name: "${IMAGE}_app"
+    volumes:
+      - ../deploy:/app/deploy
+      - ../src:/app/src
     stdin_open: true
     tty: true
     depends_on:

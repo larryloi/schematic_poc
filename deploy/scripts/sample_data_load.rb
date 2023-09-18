@@ -5,7 +5,6 @@ require 'yaml'
 require 'mysql2'
 require 'sequel'
 require 'tiny_tds'
-require_relative 'db_connection'
 
     def drop_fk
         ### Dropping table foreign keys
@@ -44,7 +43,7 @@ require_relative 'db_connection'
             puts "Reading data from file #{f} ...\n\n"
             jcontent = JSON.parse(content)
 
-            sqlserver_set_identity_insert(jcontent, 'ON') if ENV['DB_ADAPTER'] == 'tinytds'
+            sqlserver_set_identity_insert(jcontent, 'ON') if ENV['SRC_DB_ADAPTER'] == 'tinytds'
 
             jcontent.each do |tbl,row|
                 puts "Loading data into Table: #{tbl} ...\n\n"
@@ -58,7 +57,7 @@ require_relative 'db_connection'
                 end
             end
 
-            sqlserver_set_identity_insert(jcontent, 'OFF') if ENV['DB_ADAPTER'] == 'tinytds'
+            sqlserver_set_identity_insert(jcontent, 'OFF') if ENV['SRC_DB_ADAPTER'] == 'tinytds'
         end
     end
 
@@ -72,11 +71,27 @@ require_relative 'db_connection'
 ### Main
     #DB = Sequel.connect('mysql2://chronos:chronos@hq-int-ppms-vdb01.laxino.local:3306/i2_ppms_dev1')
 
+    ENV.each do |key, value|
+      puts "#{key}: #{value}"
+    end
+
+    DB = Sequel.connect(
+      adapter: ENV['SRC_DB_ADAPTER'],
+      host: ENV['SRC_DB_HOST'],
+      database: ENV['SRC_DB_NAME'],
+      user: ENV['SRC_DB_USER'],
+      password: ENV['SRC_DB_PASSWORD'],
+      port: ENV['SRC_DB_PORT'],
+      identifier_input_method: nil
+    )
+  
+
+
     $sample_data_path=ARGV[0]
     $sample_data_file = []
     $sample_data_file = Dir.glob("#{$sample_data_path}/*.json").sort
     $sample_data_file_reverse = Dir.glob("#{$sample_data_path}/*.json").sort.reverse
-    $db = ENV['DB_DATABASE']
+    $db = ENV['DB_NAME']
 
     #drop_fk    
     remove_data

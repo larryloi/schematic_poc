@@ -1,5 +1,4 @@
 ---
-  name: _Arhive_Data
   enabled: <%= ENV['JOB1_ENABLED'] || ENV['JOB_ENABLED'] || "true" %>
   notify_level_email: <%= ENV['JOB1_NOTIFY_LEVEL_EMAIL'] || ENV['JOB_NOTIFY_LEVEL_EMAIL'] || "true" %>
   notify_level_netsend: <%= ENV['JOB1_NOTIFY_LEVEL_NETSEND'] || ENV['JOB_NOTIFY_LEVEL_NETSEND'] || "true" %>

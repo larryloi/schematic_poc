@@ -1,6 +1,6 @@
-IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = 'sp_user_operation_logs')
+IF EXISTS (SELECT * FROM sys.objects o JOIN sys.schemas s ON o.schema_id = s.schema_id WHERE type = 'P' AND o.name = 'sp_user_operation_logs' AND s.name = 'dbo')
 BEGIN
-    DROP PROCEDURE sp_user_operation_logs
+    DROP PROCEDURE [dbo].[sp_user_operation_logs]
 END
 GO
 

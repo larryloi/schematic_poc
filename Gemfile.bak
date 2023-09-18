@@ -9,7 +9,8 @@ gem "psych",  "5.0.1"
 gem "mysql2", "~> 0.5"
 gem "sysrandom"
 gem "sequel", "~> 4.49"
-gem "tiny_tds", "= 2.1.5"
+gem "tiny_tds", "~> 2.1"
+
 #gem "irb"
 
 group :development, :optional => true do

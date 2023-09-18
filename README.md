@@ -20,71 +20,89 @@ In development phase, we hope to have a environment that build up fast and work 
 ### Folder structure
 ```
 .
-├── config
-│   └── agent_jobs.yml
-├── db
-│   ├── migrations
-│   │   ├── dst
-│   │   │   ├── 20171013025857_create_network_codes.rb
-│   │   │   ├── 20171013032417_create_etl_db_maps.rb
-│   │   │   ├── 20171013042416_create_etl_table_maps.rb
-│   │   │   └── 20230905145601_create_sp_user_operation_logs.rb
-│   │   └── src
-│   │       ├── 20220720233750_create_user.rb
-│   │       └── 20230904000101_create_user_operation_logs.rb
-│   ├── mssql-init
-│   │   ├── configure-db.sh
-│   │   ├── setup.sql
+├── combined.env
+├── deploy
+│   ├── jobs
+│   │   ├── _Arhive_Data
+│   │   │   ├── job.env
+│   │   │   └── job.yml
+│   │   ├── general.env
+│   │   ├── general.yml
+│   │   └── _Purge_Data
+│   │       ├── job.env
+│   │       └── job.yml
+│   ├── scripts
+│   │   ├── agent_jobs_deploy.rb
+│   │   ├── alert.rb
+│   │   ├── db_connection.rb
+│   │   ├── docker-env-start.sh
+│   │   ├── docker-env-stop.sh
+│   │   ├── sample_data_load.rb
+│   │   ├── seed_data_load.rb
+│   │   ├── stored_procedure_create.rb
 │   │   └── wait-for-it.sh
-│   ├── seeds
-│   └── stored_procedures
-│       └── create_sp_user_operation_logs.sql
+│   └── tasks
+│       └── sequel.rake
 ├── docker
 │   ├── app -> ../
-│   ├── bundler.env
+│   ├── combined.env
 │   ├── docker-compose.yml
 │   ├── Dockerfile
+│   ├── Dockerfile.bak
 │   ├── Makefile -> ../Makefile
 │   ├── RELEASE -> ../RELEASE
-│   └── scripts -> ../scripts/
-├── .env
+│   └── scripts -> ../deploy/scripts/
 ├── Gemfile
+├── Gemfile.bak
 ├── Gemfile.lock
 ├── Makefile
 ├── Rakefile.rb
 ├── README.md
 ├── RELEASE
-├── sample_data -> ../schematic_sample_data
-├── scripts
-│   ├── agent-jobs-deploy.rb
-│   ├── agent-jobs-deploy.sh
-│   ├── alert.rb
-│   ├── db-connection.rb
-│   ├── docker-env-start.sh
-│   ├── docker-env-stop.sh
-│   ├── sample-data-load.rb
-│   ├── sample-data-load.sh
-│   ├── schema-migrate.sh
-│   └── wait-for-it.sh
-└── tasks
-    └── sequel.rake
+└── src
+    ├── db
+    │   ├── migrations
+    │   │   ├── dst
+    │   │   │   ├── 20171013025857_create_network_codes.rb
+...
+    │   │   │   ├── 20230904000101_create_user_operation_logs.rb
+    │   │   │   └── 20230904000120_user_operation_logs_change_username_length.rb
+    │   │   └── src
+    │   │       ├── 20220720233750_create_user.rb
+    │   │       └── 20230904000101_create_user_operation_logs.rb
+    │   ├── mssql-init
+    │   │   ├── configure-db.sh
+    │   │   ├── setup.sql
+    │   │   └── wait-for-it.sh
+    │   ├── seeds
+    │   │   ├── etl_db_maps.yml
+    │   │   ├── etl_table_maps.yml
+    │   │   └── network_codes.yml
+    │   └── stored_procedures
+    │       ├── create_sp_user_operation_logsA.sql
+    │       └── create_sp_user_operation_logs.sql
+    └── sample_data
+        └── schematic
+            └── src
+                ├── 001_Users.json
+                └── 002_user_operation_logs.json
 ```
 
   - config
     - contains agent job configuration or others
-  - db/migrations
+  - src/db/migrations
     - contains schema migration scripts
-  - db/stored_procedures
+  - src/db/stored_procedures
     - contains stored procedure to be deployed
-  - db/mssql-init
+  - src/db/mssql-init
     - contains docker base SQL Server initail scripts
   - docker
     - contains docker environment configuration
-  - sample_data
+  - src/sample_data
     - sample data directory
-  - scripts
+  - deploy/scripts
     - contains major logic for schema migration, loading sample data, create agent jobs
-  - tasks
+  - deploy/tasks
     - ruby sequel rake tasks
 
 ### How to use?
@@ -94,13 +112,15 @@ In development phase, we hope to have a environment that build up fast and work 
   ```
 
   ### Objectives
+  1. Build a smooth deploy schema migration process.
+  2. Build a Self contain development environment.
   It will be assumpted 2 SQL server db required. For example source DB and destination DB. and some source/ destincation tables are required for ETL job logic development. We will only have to develop, schema migration scripts, ETL job logic, Agent job configuration. below some file spec we have to realise. 
 
   #### .env (environment file)
   that contains our necessary environment variables during our development or test like below.
 
   ```bash
-  IMAGE=schematic
+IMAGE=schematic
 TAG=0.1.0
 
 ENV=test
@@ -324,6 +344,7 @@ SELECT TOP (1000) [id]
   FROM [schematic_test_src].[dbo].[Users]
 FOR JSON AUTO;
 ```
+
 To run the sample data loading in your docker environment. execute the below command
 ```bash
 cd docker
@@ -336,39 +357,66 @@ make src.data.load    # sample data load into source DB
 
 After we have our sample data; we may start the ETL job development. and save the stored procedures into 
 
-- db/stored_procedures.
+- src/db/stored_procedures/create_sp_user_operation_logsA.sql
 
 which is SQL syntax
 
-To deploy your stored procedure, you have to write another schema migration script for this. for example you may create an migration script named 
+We have to enforce below deploy a new version stored procedure everytime. create or overwrite it as below sample.
 
-- db/migrations/dst/20230905145601_create_sp_user_operation_logs.rb
+```sql
+IF EXISTS (SELECT * FROM sys.objects o JOIN sys.schemas s ON o.schema_id = s.schema_id WHERE type = 'P' AND o.name = 'sp_user_operation_logs' AND s.name = 'dbo')
+BEGIN
+    DROP PROCEDURE [dbo].[sp_user_operation_logs]
+END
+GO
 
-and the content like below
-
-```ruby
-Sequel.migration do
-  up do
-    # Load the stored procedure creation script
-    run("DROP PROCEDURE IF EXISTS sp_user_operation_logs;")
-    stored_procedure_path = '/app/db/stored_procedures/create_sp_user_operation_logs.sql'
-    stored_procedure = File.read(stored_procedure_path)
-
-    # Execute the stored procedure creation script
-    run stored_procedure
-  end
-
-  down do
-    run("DROP PROCEDURE IF EXISTS sp_user_operation_logs;")
-    # You can add code here to revert the changes made in the up block
-  end
-end
+CREATE PROCEDURE [dbo].[sp_user_operation_logs]
+AS
+BEGIN
+    MERGE user_operation_logs AS target
+    USING (
+        SELECT u.name as username, l.operation, l.operated_at, l.created_at, l.updated_at
+        FROM schematic_src_test.dbo.Users u
+        JOIN schematic_src_test.dbo.user_operation_logs l ON u.id = l.user_id
+    ) AS source
+    ON target.username = source.username AND target.operated_at = source.operated_at
+    WHEN MATCHED THEN
+        UPDATE SET
+            target.operation = source.operation,
+            target.created_at = source.created_at,
+            target.updated_at = source.updated_at
+    WHEN NOT MATCHED THEN
+        INSERT (username, operation, operated_at, created_at, updated_at)
+        VALUES (source.username, source.operation, source.operated_at, source.created_at, source.updated_at);
+END;
 ```
-To create the stored procedrue into docker environment is the same method as schema migraton scripts.
+
+To create the stored procedrue into docker environment run the below command
+```bash
+cd docker
+
+make dst.sp.deploy    # Deploying job into target DB
+```
+
+
 
 #### Prepare your Agent jobs
 Agent jobs config is control by a config file below which is a yaml format.
-- config/agent_jobs.yml
+- Job config
+  - deploy/jobs/general.yml
+  - deploy/jobs/*/job.yml
+
+general.yml is common config
+
+*/job.yml are job specific configuration that could overwrite the common config, * sign is directory names are expected job name
+
+- Job environment variables
+  - deploy/jobs/general.env
+  - deploy/jobs/*/job.env
+
+general.env holds common environments
+*/job.env are job specific environment variables that could overwrite the common environment variables, * sign is directory names are expected job name
+
 
 here is a sample
 ```yaml
@@ -438,8 +486,10 @@ To run the create agent job in your docker environment. execute the below comman
 ```bash
 cd docker
 
-make job.deploy    # Deploying job into target DB
+make dst.job.deploy    # Deploying job into target DB
 ```
+
+
 ---
 ## Build your docker images
 There is a RELEASE file under the root path that control the image name and tag
@@ -460,7 +510,21 @@ In QA and production environments which is kubernetes environments that need us 
 - Docker image name and tag name; which is sort of ``schematic:0.1.0`` in this sample
 - environment variables in ``.env`` file
 - agent job config file ``config/agent_jobs.yml``
-- bash commands that container need to run; The docker images set ENTRYPOINT ["/bin/bash", "-c"] to accept command injected from external, in our case, the below 2 commands for schema migration and agent job deploy
-  - /app/scripts/schema-migrate.sh dst up
-  - /app/scripts/agent-jobs-deploy.sh
+- bash commands that container need to run; The docker images set ENTRYPOINT ["/bin/bash", "-c"] to accept command injected from external, in our case, the below commands for schema migration, stored procedures and agent job deploy
+
+For schema migration
+```
+make dst.sch.up
+```
+
+For Stored procedure deployment
+```
+make dst.sp.deploy
+```
+
+For agent job deployment
+```
+make dst.job.deploy
+```
+
 

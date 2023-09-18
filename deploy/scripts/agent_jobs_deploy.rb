@@ -1,22 +1,35 @@
 require_relative 'db_connection'
 require 'yaml'
 require 'erb'
+require 'sequel'
+require 'tiny_tds'
 
+job_env = {
+  'DB_ADAPTER' => 'tinytds',
+  'DB_HOST' => ENV['JOB_DB_HOST'],
+  'DB_NAME' => 'msdb',
+  'DB_USER' => ENV['JOB_DB_USER'],
+  'DB_PASSWORD' => ENV['JOB_DB_PASSWORD'],
+  'DB_PORT' => ENV['JOB_DB_PORT']
+}
+
+job_db = db_connection(job_env)
 
 # Load general configuration
-general_config_file = '/app/deploy/jobs/config/general.yml'
+general_config_file = '/app/deploy/jobs/general.yml'
 general_config = YAML.load(ERB.new(File.read(general_config_file)).result)
 
 puts "  >> Loading general configuration from #{general_config_file}\n---------------------------------------------\n"
 
-# List of job config files
-job_config_files = Dir.glob('/app/deploy/jobs/config/job*.yml')
+# List of job directories
+job_directories = Dir.glob('/app/deploy/jobs/*').select { |f| File.directory? f }
 
 # Begin transaction
-DB.transaction do
-  # Iterate over job config files
-  job_config_files.each do |job_config_file|
+job_db.transaction do
+  # Iterate over job directories
+  job_directories.each do |job_directory|
     # Load job-specific configuration
+    job_config_file = File.join(job_directory, 'job.yml')
     job_config = YAML.load(ERB.new(File.read(job_config_file)).result)
 
     puts "  >> Loading job-specific configuration from #{job_config_file}\n---------------------------------------------\n"
@@ -29,22 +42,22 @@ DB.transaction do
     category_name = job['category_name']
     owner_login_name = job['owner_login_name']
     database_name = job['database_name']
-    job_name = job['name']
+    job_name = File.basename(job_directory) # Use directory name as the job name
     #schedule_uid = SecureRandom.uuid
 
     # Check if job exists
-    if DB.fetch("SELECT name FROM msdb.dbo.sysjobs WHERE name=?", job_name).count > 0
+    if job_db.fetch("SELECT name FROM msdb.dbo.sysjobs WHERE name=?", job_name).count > 0
 
       # Delete job if exists
-      DB.call_mssql_sproc(:sp_delete_job, args:{
+      job_db.call_mssql_sproc(:sp_delete_job, args:{
         'job_name' => job_name
       })
     end
 
     # Check if category exists
-    if DB.fetch("SELECT name FROM msdb.dbo.syscategories WHERE name=? AND category_class=1", category_name).count == 0
+    if job_db.fetch("SELECT name FROM msdb.dbo.syscategories WHERE name=? AND category_class=1", category_name).count == 0
 
-      DB.call_mssql_sproc(:sp_add_category, args: {
+      job_db.call_mssql_sproc(:sp_add_category, args: {
         'class' => 'JOB',
         'type' => 'LOCAL',
         'name' => category_name
@@ -53,7 +66,7 @@ DB.transaction do
 
     # Creating job
     puts "  >> Creating job #{job_name}"
-    job_id = DB.call_mssql_sproc(:sp_add_job, args: {
+    job_id = job_db.call_mssql_sproc(:sp_add_job, args: {
       'job_name' => job_name,
       'enabled' => job['enabled'],
       'notify_level_eventlog' => 0,
@@ -75,7 +88,7 @@ DB.transaction do
 
       # Add job step
       puts "    >> Adding step #{step['name']}"
-      DB.call_mssql_sproc(:sp_add_jobstep, args: {
+      job_db.call_mssql_sproc(:sp_add_jobstep, args: {
         'job_id' => job_id,
         'step_id' => step['id'],
         'step_name' => step['name'] || step['command'].split(' ')[1],
@@ -92,7 +105,7 @@ DB.transaction do
     end
 
     # Update start step id of the job
-    DB.call_mssql_sproc(:sp_update_job, args: {
+    job_db.call_mssql_sproc(:sp_update_job, args: {
       'job_id' => job_id.to_s,
       'start_step_id' => 1
     })
@@ -100,7 +113,7 @@ DB.transaction do
 
     # Add schedule to the job
     puts "  >> Adding schedule to the job #{job_name}"
-    DB.call_mssql_sproc(:sp_add_jobschedule, args: {
+    job_db.call_mssql_sproc(:sp_add_jobschedule, args: {
       'job_id' => job_id,
       #':schedule_uid, type: :output},
       'name' => job['schedule_name'],
@@ -119,7 +132,7 @@ DB.transaction do
 
     # Add server to the job
     puts "  >> Adding server to the job #{job_name}\n---------------------------------------------\n"
-    DB.call_mssql_sproc(:sp_add_jobserver, args: {
+    job_db.call_mssql_sproc(:sp_add_jobserver, args: {
       'job_id' => job_id.to_s,
       'server_name' => '(local)'
     })

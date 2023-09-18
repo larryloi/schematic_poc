@@ -14,7 +14,7 @@ namespace :db do
           DB = Sequel.connect(
             adapter: 'mysql2',
             host: ENV['DB_HOST'],
-            database: ENV['DB_DATABASE'],
+            database: ENV['DB_NAME'],
             user: ENV['DB_USER'],
             password: ENV['DB_PASSWORD'],
             port: ENV['DB_PORT'],
@@ -25,7 +25,7 @@ namespace :db do
           DB = Sequel.connect(
             adapter: 'tinytds',
             host: ENV['DB_HOST'],
-            database: ENV['DB_DATABASE'],
+            database: ENV['DB_NAME'],
             user: ENV['DB_USER'],
             password: ENV['DB_PASSWORD'],
             port: ENV['DB_PORT'],

@@ -1,10 +1,4 @@
 ---
-  name: _Purge_Data
-  enabled: <%= ENV['JOB2_ENABLED'] || ENV['JOB_ENABLED'] || "true" %>
-  notify_level_email: <%= ENV['JOB2_NOTIFY_LEVEL_EMAIL'] || ENV['JOB_NOTIFY_LEVEL_EMAIL'] || "true" %>
-  notify_level_netsend: <%= ENV['JOB2_NOTIFY_LEVEL_NETSEND'] || ENV['JOB_NOTIFY_LEVEL_NETSEND'] || "true" %>
-  notify_level_page: <%= ENV['JOB2_NOTIFY_LEVEL_PAGE'] || ENV['JOB_NOTIFY_LEVEL_PAGE'] || "true" %>
-  delete_level: <%= ENV['JOB2_DELETE_LEVEL'] || ENV['JOB_DELETE_LEVEL'] || "true" %>
   description: Purge_Data
   category_name: _Data_Maintenance
   owner_login_name: schematic
