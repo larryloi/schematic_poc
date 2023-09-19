@@ -18,6 +18,10 @@ GO
 
 USE [schematic_test_dst]
 GO
+
+CREATE SCHEMA DestSchema;
+GO
+
 CREATE USER [schematic] FOR LOGIN [schematic] WITH DEFAULT_SCHEMA=[dbo];
 GO
 
@@ -56,3 +60,8 @@ GO
 EXEC master..sp_addsrvrolemember @loginame = N'schematic', @rolename = N'sysadmin'
 GO
 
+USE [schematic_test_src]
+GO
+
+CREATE SCHEMA SourceSchema;
+GO

@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    create_table(:dim_dates) do
+    create_table(dbschema(:dim_dates)) do
       primary_key :id, type: 'INT'
       Date :day_name, null: true
       Integer :day_of_week, null: true
@@ -24,7 +24,7 @@ Sequel.migration do
 
     end
 
-    alter_table(:dim_dates) do
+    alter_table(dbschema(:dim_dates)) do
       add_index [:day_name], name: 'IDX_dim_dates_day_name'
       add_index [:day_key], name: 'IDX_dim_dates_day_key'
       add_index [:week_key], name: 'IDX_dim_dates_week_key'
@@ -35,6 +35,6 @@ Sequel.migration do
   end
 
   down do
-    drop_table(:dim_dates)
+    drop_table(dbschema(:dim_dates))
   end
 end

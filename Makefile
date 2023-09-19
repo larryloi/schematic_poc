@@ -45,17 +45,17 @@ rmi:
 ########
 src.sch.up:
 	${INFO} "Schema migration Started..."
-	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(SRC_DB_HOST):1433 -t 60 -- rake db:migrate:up DB_USER=$(SRC_DB_USER) DB_NAME=$(SRC_DB_NAME) DB_PORT=$(SRC_DB_PORT) DB_PASSWORD=$(SRC_DB_PASSWORD) DB_HOST=$(SRC_DB_HOST) SCHEMA_TABLE=$(SRC_SCHEMA_TABLE) DB_ADAPTER=$(SRC_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_SRC)
+	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(SRC_DB_HOST):1433 -t 60 -- rake db:migrate:up DB_USER=$(SRC_DB_USER) DB_NAME=$(SRC_DB_NAME) DB_PORT=$(SRC_DB_PORT) DB_PASSWORD=$(SRC_DB_PASSWORD) DB_HOST=$(SRC_DB_HOST) SCHEMA_TABLE=$(SRC_SCHEMA_TABLE) DB_ADAPTER=$(SRC_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_SRC) DB_SCHEMA=$(SRC_DB_SCHEMA)
 	${INFO} "Schema migration Done..."
 
 src.sch.down:
 	${INFO} "Schema migration Started..."
-	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(SRC_DB_HOST):1433 -t 60 -- rake db:migrate:down DB_USER=$(SRC_DB_USER) DB_NAME=$(SRC_DB_NAME) DB_PORT=$(SRC_DB_PORT) DB_PASSWORD=$(SRC_DB_PASSWORD) DB_HOST=$(SRC_DB_HOST) SCHEMA_TABLE=$(SRC_SCHEMA_TABLE) DB_ADAPTER=$(SRC_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_SRC) 
+	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(SRC_DB_HOST):1433 -t 60 -- rake db:migrate:down DB_USER=$(SRC_DB_USER) DB_NAME=$(SRC_DB_NAME) DB_PORT=$(SRC_DB_PORT) DB_PASSWORD=$(SRC_DB_PASSWORD) DB_HOST=$(SRC_DB_HOST) SCHEMA_TABLE=$(SRC_SCHEMA_TABLE) DB_ADAPTER=$(SRC_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_SRC) DB_SCHEMA=$(SRC_DB_SCHEMA)
 	${INFO} "Schema migration Done..."
 
 src.sch.to:
 	${INFO} "Schema migration Started..."
-	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(SRC_DB_HOST):1433 -t 60 -- rake db:migrate:to DB_USER=$(SRC_DB_USER) DB_NAME=$(SRC_DB_NAME) DB_PORT=$(SRC_DB_PORT) DB_PASSWORD=$(SRC_DB_PASSWORD) DB_HOST=$(SRC_DB_HOST) SCHEMA_TABLE=$(SRC_SCHEMA_TABLE) DB_ADAPTER=$(SRC_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_SRC) VERSION=$(DB_VERSION)
+	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(SRC_DB_HOST):1433 -t 60 -- rake db:migrate:to DB_USER=$(SRC_DB_USER) DB_NAME=$(SRC_DB_NAME) DB_PORT=$(SRC_DB_PORT) DB_PASSWORD=$(SRC_DB_PASSWORD) DB_HOST=$(SRC_DB_HOST) SCHEMA_TABLE=$(SRC_SCHEMA_TABLE) DB_ADAPTER=$(SRC_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_SRC) VERSION=$(DB_VERSION) DB_SCHEMA=$(SRC_DB_SCHEMA)
 	${INFO} "Schema migration Done..."
 
 src.data.load: concat_env_files
@@ -68,17 +68,17 @@ src.data.load: concat_env_files
 ########
 dst.sch.up:
 	${INFO} "Schema migration Started..."
-	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(DST_DB_HOST):1433 -t 60 -- rake db:migrate:up DB_USER=$(DST_DB_USER) DB_NAME=$(DST_DB_NAME) DB_PORT=$(DST_DB_PORT) DB_PASSWORD=$(DST_DB_PASSWORD) DB_HOST=$(DST_DB_HOST) SCHEMA_TABLE=$(DST_SCHEMA_TABLE) DB_ADAPTER=$(DST_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_DST)
+	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(DST_DB_HOST):1433 -t 60 -- rake db:migrate:up DB_USER=$(DST_DB_USER) DB_NAME=$(DST_DB_NAME) DB_PORT=$(DST_DB_PORT) DB_PASSWORD=$(DST_DB_PASSWORD) DB_HOST=$(DST_DB_HOST) SCHEMA_TABLE=$(DST_SCHEMA_TABLE) DB_ADAPTER=$(DST_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_DST) DB_SCHEMA=$(DST_DB_SCHEMA)
 	${INFO} "Schema migration Done..."
 
 dst.sch.down:
 	${INFO} "Schema migration Started..."
-	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(DST_DB_HOST):1433 -t 60 -- rake db:migrate:down DB_USER=$(DST_DB_USER) DB_NAME=$(DST_DB_NAME) DB_PORT=$(DST_DB_PORT) DB_PASSWORD=$(DST_DB_PASSWORD) DB_HOST=$(DST_DB_HOST) SCHEMA_TABLE=$(DST_SCHEMA_TABLE) DB_ADAPTER=$(DST_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_DST) 
+	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(DST_DB_HOST):1433 -t 60 -- rake db:migrate:down DB_USER=$(DST_DB_USER) DB_NAME=$(DST_DB_NAME) DB_PORT=$(DST_DB_PORT) DB_PASSWORD=$(DST_DB_PASSWORD) DB_HOST=$(DST_DB_HOST) SCHEMA_TABLE=$(DST_SCHEMA_TABLE) DB_ADAPTER=$(DST_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_DST) DB_SCHEMA=$(DST_DB_SCHEMA)
 	${INFO} "Schema migration Done..."
 
 dst.sch.to:
 	${INFO} "Schema migration Started..."
-	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(DST_DB_HOST):1433 -t 60 -- rake db:migrate:to DB_USER=$(DST_DB_USER) DB_NAME=$(DST_DB_NAME) DB_PORT=$(DST_DB_PORT) DB_PASSWORD=$(DST_DB_PASSWORD) DB_HOST=$(DST_DB_HOST) SCHEMA_TABLE=$(DST_SCHEMA_TABLE) DB_ADAPTER=$(DST_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_DST) VERSION=$(DB_VERSION)
+	docker-compose run --rm app /app/deploy/scripts/wait-for-it.sh $(DST_DB_HOST):1433 -t 60 -- rake db:migrate:to DB_USER=$(DST_DB_USER) DB_NAME=$(DST_DB_NAME) DB_PORT=$(DST_DB_PORT) DB_PASSWORD=$(DST_DB_PASSWORD) DB_HOST=$(DST_DB_HOST) SCHEMA_TABLE=$(DST_SCHEMA_TABLE) DB_ADAPTER=$(DST_DB_ADAPTER) MIGRATION_PATH=$(MIGRATION_PATH_DST) VERSION=$(DB_VERSION) DB_SCHEMA=$(DST_DB_SCHEMA)
 	${INFO} "Schema migration Done..."
 
 dst.sp.deploy:

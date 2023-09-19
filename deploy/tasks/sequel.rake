@@ -1,12 +1,18 @@
+require 'sequel'
+
+def dbschema(table_name)
+  Sequel[ENV['DB_SCHEMA'].to_sym][table_name]
+end
+
 namespace :db do
     require 'bundler/setup'
     require 'bundler'
-    require 'sequel'
+    #require 'sequel'
     require 'yaml'
     require 'json'
+    require 'tiny_tds'
     namespace :migrate do
       Sequel.extension :migration
-
 
       task :connect do
         case ENV['DB_ADAPTER']
@@ -28,9 +34,13 @@ namespace :db do
             database: ENV['DB_NAME'],
             user: ENV['DB_USER'],
             password: ENV['DB_PASSWORD'],
-            port: ENV['DB_PORT'],
-            identifier_input_method: nil
+            port: ENV['DB_PORT']
           )
+          DB.extension(:identifier_mangling)
+          DB.identifier_input_method = DB.identifier_output_method = nil
+          #puts DB.inspect
+          #puts DB.methods
+
         else
           raise "Unsupported adapter: #{ENV['DB_ADAPTER']}"
         end
@@ -40,31 +50,31 @@ namespace :db do
       task :reset => [:connect] do
         Sequel::Migrator.run(DB, ENV['MIGRATION_PATH'], :target => 0, :allow_missing_migration_files => true)
         Sequel::Migrator.run(DB, ENV['MIGRATION_PATH'], :allow_missing_migration_files => true)
-        puts '*** db:migrate:reset executed ***'
+        puts "*** db:migrate:reset executed ***\n"
       end
 
       desc 'Perform migration up/down to VERSION.'
       task :to => [:connect] do
         version = ENV['VERSION'].to_i
         if version == 0
-          puts 'VERSION must be larger than 0. Use rake db:migrate:down to erase all data.'
+          puts "\nVERSION must be larger than 0. Use rake db:migrate:down to erase all data.\n"
           exit false
         end
 
         Sequel::Migrator.run(DB, ENV['MIGRATION_PATH'], :target => version, :allow_missing_migration_files => true)
-        puts "*** db:migrate:to VERSION=[#{version}] executed ***"
+        puts "*** db:migrate:to VERSION=[#{version}] executed ***\n"
       end
 
       desc 'Perform migration up to latest migration available.'
       task :up => [:connect] do
         Sequel::Migrator.run(DB, ENV['MIGRATION_PATH'], :allow_missing_migration_files => true)
-        puts '*** db:migrate:up executed ***'
+        puts "*** db:migrate:up executed ***\n"
       end
 
       desc 'Perform migration down (erase all data).'
       task :down => [:connect] do
         Sequel::Migrator.run(DB, ENV['MIGRATION_PATH'], :target => 0, :allow_missing_migration_files => true)
-        puts '*** db:migrate:down executed ***'
+        puts "*** db:migrate:down executed ***"
       end
  
       module Sequel
@@ -72,7 +82,6 @@ namespace :db do
           def run
             migration_tuples.each do |m, f, direction|
               t = Time.now
-              #puts '*' * 50
               puts "#{f} \n\n"
               db.log_info("Begin applying migration #{f}, direction: #{direction}")
               checked_transaction(m) do

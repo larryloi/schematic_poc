@@ -132,6 +132,7 @@ SRC_DB_PASSWORD=schematic123
 SRC_DB_HOST=centos7
 SRC_DB_PORT=1433
 SRC_DB_NAME=schematic_test_src
+SRC_DB_SCHEMA=SourceSchema
 SRC_SCHEMA_TABLE=schema_migrations
 ...
   ```
@@ -245,11 +246,11 @@ http://sequel.jeremyevans.net/rdoc/files/doc/migration_rdoc.html
 
 Sample migration script here
   ```ruby
-  Sequel.migration do
+Sequel.migration do
   up do
-    create_table(:etl_table_maps) do
+    create_table(dbschema(:etl_table_maps)) do
       primary_key :id, type: 'INT'
-      foreign_key :etl_db_map_id, :etl_db_maps, null: false
+      foreign_key :etl_db_map_id, dbschema(:etl_db_maps), null: false
       String :transformer, size: 255, null: false
       DateTime :data_process_started_at, null: true
       DateTime :data_process_completed_at, null: true
@@ -266,7 +267,7 @@ Sample migration script here
   end
 
   down do
-    drop_table(:etl_table_maps)
+    drop_table(dbschema(:etl_table_maps))
   end
 end
   ```

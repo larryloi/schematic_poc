@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    create_table(:network_codes) do
+    create_table(dbschema(:network_codes)) do
       primary_key :id, type: 'INT'
       String :name, size: 255, null: false
 
@@ -10,6 +10,6 @@ Sequel.migration do
   end
 
   down do
-    drop_table(:network_codes)
+    drop_table(dbschema(:network_codes))
   end
 end

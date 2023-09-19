@@ -1,8 +1,8 @@
 Sequel.migration do
   up do
-    create_table(:etl_table_maps) do
+    create_table(dbschema(:etl_table_maps)) do
       primary_key :id, type: 'INT'
-      foreign_key :etl_db_map_id, :etl_db_maps, null: false
+      foreign_key :etl_db_map_id, dbschema(:etl_db_maps), null: false
       String :transformer, size: 255, null: false
       DateTime :data_process_started_at, null: true
       DateTime :data_process_completed_at, null: true
@@ -19,6 +19,6 @@ Sequel.migration do
   end
 
   down do
-    drop_table(:etl_table_maps)
+    drop_table(dbschema(:etl_table_maps))
   end
 end

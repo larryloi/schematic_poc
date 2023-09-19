@@ -28,7 +28,8 @@ require 'tiny_tds'
 
             jcontent.each do |tbl,row|
                 puts "Removing data from Table: #{tbl} ...\n\n"
-                DB[tbl.to_sym].delete
+                DB[Sequel[ENV['SRC_DB_SCHEMA'].to_sym][tbl.to_sym]].delete
+                #DB[tbl.to_sym].delete
             end
         end
         puts "Done ...\n\n"
@@ -53,7 +54,8 @@ require 'tiny_tds'
                        r[k] = v.to_json
                     end
                   end
-                  DB[tbl.to_sym].insert(r)
+                  
+                  DB[Sequel[ENV['SRC_DB_SCHEMA'].to_sym][tbl.to_sym]].insert(r)
                 end
             end
 
@@ -63,17 +65,20 @@ require 'tiny_tds'
 
     def sqlserver_set_identity_insert(js, switch)
         js.each do |tbl, row|
-          puts "SET IDENTITY_INSERT #{tbl} #{switch}\n\n"
-          DB.run("SET IDENTITY_INSERT #{tbl} #{switch}")
+          puts "SET IDENTITY_INSERT [#{ENV['SRC_DB_SCHEMA']}].[#{tbl}] #{switch}\n\n"
+          DB.run("SET IDENTITY_INSERT [#{ENV['SRC_DB_SCHEMA']}].[#{tbl}] #{switch}")
         end
     end
 
 ### Main
     #DB = Sequel.connect('mysql2://chronos:chronos@hq-int-ppms-vdb01.laxino.local:3306/i2_ppms_dev1')
 
-    ENV.each do |key, value|
-      puts "#{key}: #{value}"
-    end
+    #ENV.each do |key, value|
+    #  if key.start_with?('SRC') 
+    #  #if key.end_with?('LEVEL')
+    #    puts "#{key}: #{value}"
+    #  end
+    #end
 
     DB = Sequel.connect(
       adapter: ENV['SRC_DB_ADAPTER'],
@@ -81,10 +86,10 @@ require 'tiny_tds'
       database: ENV['SRC_DB_NAME'],
       user: ENV['SRC_DB_USER'],
       password: ENV['SRC_DB_PASSWORD'],
-      port: ENV['SRC_DB_PORT'],
-      identifier_input_method: nil
+      port: ENV['SRC_DB_PORT']
     )
-  
+    DB.extension(:identifier_mangling)
+    DB.identifier_input_method = DB.identifier_output_method = nil
 
 
     $sample_data_path=ARGV[0]

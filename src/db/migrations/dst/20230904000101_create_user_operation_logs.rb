@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    create_table(:user_operation_logs) do
+    create_table(dbschema(:user_operation_logs)) do
       primary_key :id, type: 'INT', auto_increment: true
       String :username, size: 85, null: false
       String :operation, size: 85, null: false
@@ -11,6 +11,6 @@ Sequel.migration do
   end
 
   down do
-    drop_table(:user_operation_logs)
+    drop_table(dbschema(:user_operation_logs))
   end
 end

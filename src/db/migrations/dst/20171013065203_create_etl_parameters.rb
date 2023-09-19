@@ -1,6 +1,6 @@
 Sequel.migration do
   up do
-    create_table(:etl_parameters) do
+    create_table(dbschema(:etl_parameters)) do
       primary_key :id, type: 'INT'
       String :parameter, size: 100, null: false
       String :value, size: 512, null: false
@@ -10,6 +10,6 @@ Sequel.migration do
   end
 
   down do
-    drop_table(:etl_parameters)
+    drop_table(dbschema(:etl_parameters))
   end
 end

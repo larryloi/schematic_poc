@@ -1,12 +1,13 @@
 FROM ruby:2.6.10-alpine
 LABEL maintainer="larry.loi@pm.me"
 
-RUN apk update && \
-    apk add bash mysql-client wget netcat-openbsd vim curl git nodejs curl freetds-dev build-base mariadb-connector-c-dev && \
-    rm -rf /var/cache/apk/*
+#RUN apk update && \
+#    apk add bash mysql-client wget netcat-openbsd vim curl git nodejs freetds-dev build-base mariadb-connector-c-dev && \
+#    rm -rf /var/cache/apk/*
 
-#ENV BUNDLE_PATH=vendor/bundle
-#ENV BUNDLE_GLOBAL_PATH_APPENDS_RUBY_SCOPE=1
+RUN apk update && \
+    apk add bash mysql-client git nodejs curl freetds-dev build-base mariadb-connector-c-dev && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /app
 ADD . /app

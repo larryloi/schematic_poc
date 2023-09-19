@@ -8,7 +8,7 @@ gem "psych",  "5.0.1"
 
 gem "mysql2", "~> 0.5"
 gem "sysrandom"
-gem "sequel", "~> 4.49"
+gem "sequel", "~> 5.0"
 gem "tiny_tds", "= 2.1.5"
 #gem "irb"
 
