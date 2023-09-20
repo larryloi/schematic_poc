@@ -6,7 +6,9 @@ An Rdb schema migration tools that develop on ruby and Supporting SQL Server and
   - MySQL, help to create database schema.
 
   #### SQL Server suport versoin
-  - SQL Server 2017
+  - SQL Server 2017 (mcr.microsoft.com/mssql/server:2017-CU24-ubuntu-16.04)
+  - SQL Server 2019 (mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04)
+  - SQL Server 2022 (mcr.microsoft.com/mssql/server:2022-CU8-ubuntu-20.04)
 
   #### MySQL support version
   - 5.7.x
