@@ -42,7 +42,7 @@ services:
     ports:
       - 1433:1433
     volumes:
-      - ../src/db/mssql-init:/mssql-init
+      - ../src/mssql-init:/mssql-init
       - sql-server-data:/var/opt/mssql/
       - sqldata:/var/opt/sqlserver/data
       - sqllog:/var/opt/sqlserver/log

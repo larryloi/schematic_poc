@@ -1,3 +1,4 @@
+require_relative 'db_connection'
 require 'bundler/setup'
 require 'bundler'
 require 'json'
@@ -5,15 +6,17 @@ require 'yaml'
 require 'mysql2'
 require 'sequel'
 require 'tiny_tds'
+require 'open3'
+
 
     def drop_fk
         ### Dropping table foreign keys
         puts "=================================================================\n\n"
         puts "Dropping Foreign keys before loading data ...\n\n"
         fks = []
-        fks = DB.fetch("SELECT TABLE_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '#{$db}' GROUP BY TABLE_NAME, CONSTRAINT_NAME").all
+        fks = db.fetch("SELECT TABLE_NAME, CONSTRAINT_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '#{$db}' GROUP BY TABLE_NAME, CONSTRAINT_NAME").all
         fks.each do |fk|
-          DB.run("ALTER TABLE #{fk[:TABLE_NAME]} DROP FOREIGN KEY #{fk[:CONSTRAINT_NAME]}")
+          db.run("ALTER TABLE #{fk[:TABLE_NAME]} DROP FOREIGN KEY #{fk[:CONSTRAINT_NAME]}")
         end
         puts "Done ...\n\n"
     end
@@ -23,13 +26,13 @@ require 'tiny_tds'
         puts "=================================================================\n\n"
         $sample_data_file_reverse.each do |f|
             content = File.read(f)
-            #puts "\n"
+
             jcontent = JSON.parse(content)
 
             jcontent.each do |tbl,row|
                 puts "Removing data from Table: #{tbl} ...\n\n"
                 DB[Sequel[ENV['SRC_DB_SCHEMA'].to_sym][tbl.to_sym]].delete
-                #DB[tbl.to_sym].delete
+
             end
         end
         puts "Done ...\n\n"
@@ -40,7 +43,7 @@ require 'tiny_tds'
         puts "=================================================================\n\n"
         $sample_data_file.each do |f|
             content = File.read(f)
-            #puts "\n"
+
             puts "Reading data from file #{f} ...\n\n"
             jcontent = JSON.parse(content)
 
@@ -71,26 +74,18 @@ require 'tiny_tds'
     end
 
 ### Main
-    #DB = Sequel.connect('mysql2://chronos:chronos@hq-int-ppms-vdb01.laxino.local:3306/i2_ppms_dev1')
+    #db = Sequel.connect('mysql2://chronos:chronos@hq-int-ppms-vdb01.laxino.local:3306/i2_ppms_dev1')
 
-    #ENV.each do |key, value|
-    #  if key.start_with?('SRC') 
-    #  #if key.end_with?('LEVEL')
-    #    puts "#{key}: #{value}"
-    #  end
-    #end
+src_env = {
+  'DB_ADAPTER' => 'tinytds',
+  'DB_HOST' => ENV['SRC_DB_HOST'],
+  'DB_NAME' => ENV['SRC_DB_NAME'],
+  #'DB_USER' => ENV['SP_DB_USER'],
+  #'DB_PASSWORD' => ENV['SP_DB_PASSWORD'],
+  'DB_PORT' => ENV['SRC_DB_PORT']
+}
 
-    DB = Sequel.connect(
-      adapter: ENV['SRC_DB_ADAPTER'],
-      host: ENV['SRC_DB_HOST'],
-      database: ENV['SRC_DB_NAME'],
-      user: ENV['SRC_DB_USER'],
-      password: ENV['SRC_DB_PASSWORD'],
-      port: ENV['SRC_DB_PORT']
-    )
-    DB.extension(:identifier_mangling)
-    DB.identifier_input_method = DB.identifier_output_method = nil
-
+DB = db_connection(src_env)
 
     $sample_data_path=ARGV[0]
     $sample_data_file = []

@@ -22,7 +22,7 @@ docker network create --driver bridge integration || true
   START_APP()
     {
       HILN "Starting up archive service ...\n"
-      #docker-compose up -d app
+      docker-compose up -d app
       HILN "Running DB migration for source database ...\n"
       make src.sch.up
 
@@ -32,7 +32,11 @@ docker network create --driver bridge integration || true
       HILN "Running DB migration for destination database ...\n"
       make dst.sch.up
 
-      make job.deploy
+      HILN "Deploying stored procedure to destination database ...\n" 
+      make dst.sp.deploy
+
+      HILN "Deploying agent job to destination database ...\n"
+      make dst.job.deploy
       HILN "Running containers.\n"; docker-compose ps; HILN "Docker volumes.\n"; docker volume ls
     }
 
@@ -48,6 +52,6 @@ docker network create --driver bridge integration || true
 ### MAIN ###
 ############
 
-  #BUILD_IMAGE
-  START_DB
-  #START_APP
+  BUILD_IMAGE
+  #START_DB
+  START_APP

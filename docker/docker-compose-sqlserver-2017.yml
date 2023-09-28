@@ -41,7 +41,7 @@ services:
       - 1433:1433
     volumes:
       - schematic_db:/var/opt/mssql
-      - ../src/db/mssql-init:/mssql-init
+      - ../src/mssql-init:/mssql-init
     networks:
       - integration
     #command:

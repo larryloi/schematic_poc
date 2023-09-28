@@ -1,4 +1,34 @@
 # schematic
+- [schematic](#schematic)
+  - [Introduction](#introduction)
+      - [Functions](#functions)
+      - [SQL Server suport versoin](#sql-server-suport-versoin)
+      - [MySQL support version](#mysql-support-version)
+  - [Development, Testing phases](#development-testing-phases)
+    - [Folder structure](#folder-structure)
+    - [How to use?](#how-to-use)
+      - [Get the code from github](#get-the-code-from-github)
+    - [Objectives](#objectives)
+      - [.env (environment file)](#env-environment-file)
+      - [docker-compose.yml](#docker-composeyml)
+      - [Makefile](#makefile)
+      - [docker-env-start.sh and docker-env-stop.sh  (Shell scripts)](#docker-env-startsh-and-docker-env-stopsh--shell-scripts)
+    - [Getting start your development.](#getting-start-your-development)
+      - [Start up your own environment.](#start-up-your-own-environment)
+      - [Prepare your schema migration scripts and stored procedure](#prepare-your-schema-migration-scripts-and-stored-procedure)
+      - [Prepare your sample data](#prepare-your-sample-data)
+      - [Prepare your Stored Procedure](#prepare-your-stored-procedure)
+      - [Prepare your Agent jobs](#prepare-your-agent-jobs)
+  - [Build your docker images](#build-your-docker-images)
+  - [Deploy to QA and Production environments](#deploy-to-qa-and-production-environments)
+  - [Docker Desktop Environment Setup Guide for Windows](#docker-desktop-environment-setup-guide-for-windows)
+    - [Introduction](#introduction-1)
+    - [Install WSL2](#install-wsl2)
+    - [Install Docker Desktop](#install-docker-desktop)
+    - [Install VS Code](#install-vs-code)
+    - [Install SQL Server Management Studio](#install-sql-server-management-studio)
+
+
 ## Introduction
 An Rdb schema migration tools that develop on ruby and Supporting SQL Server and MySQL. This help you to deploy you database schema change. stored procedure and create or update agent job on SQL Server formally and solidly.
 #### Functions
@@ -530,4 +560,44 @@ For agent job deployment
 make dst.job.deploy
 ```
 
+---
+## Docker Desktop Environment Setup Guide for Windows
 
+### Introduction
+This guide provides detailed steps for setting up a Docker Desktop environment on Windows 10 and 11.
+
+### Install WSL2
+1. **Check System Requirements:** Make sure you are running Windows 10 version 2004 and higher (Build 19041 and higher) or Windows 11.
+2. **Enable WSL:** Open PowerShell as Administrator and run: 
+   
+   ```dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart```
+3. **Enable Virtual Machine Platform:** In the same PowerShell window, run: 
+   
+    ```dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart```
+4. **Set WSL2 as Default:** In the same PowerShell window, run:
+
+    ```wsl --set-default-version 2```
+
+5. **Install a Linux Distribution:**
+   
+   a. Visit the Microsoft Store, search for your preferred Linux distribution (like Ubuntu), and click Install. 
+
+    b. by command: list availabe distribution; and install by specific distribution. 
+    
+    ```wsl —list —online```
+
+    ```wsl —install -d Ubuntu-22.04```
+
+### Install Docker Desktop
+1. **Check System Requirements:** Make sure your system meets the requirements for Docker Desktop.
+2. **Download Docker Desktop:** Visit the Docker Desktop download page.
+3. **Install Docker Desktop:** Run the installer (Docker Desktop Installer.exe) to start the installation process.
+4. **Enable WSL 2 backend:** During installation, ensure the “Use WSL 2 instead of Hyper-V” option on the Configuration page is selected.
+
+### Install VS Code
+1. **Download VS Code:** Visit the Visual Studio Code download page.
+2. **Connect to WSL from VS Code:** Press F1 in VS Code, select “WSL: Connect to WSL” for the default distro or “WSL: Connect to WSL using Distro” for a specific distro.
+
+### Install SQL Server Management Studio
+1. **Download SQL Server Management Studio (SSMS):** Visit the SSMS download page.
+2. **Install SSMS:** Run the installer to start the installation process.

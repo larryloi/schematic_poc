@@ -6,15 +6,15 @@ require 'tiny_tds'
 require 'pathname' 
 
 # Directory where the stored procedures are saved
-dir = Pathname.new('/app/src/db/stored_procedures')
+dir = Pathname.new('/app/src/stored_procedures')
 
 
 sp_env = {
   'DB_ADAPTER' => 'tinytds',
   'DB_HOST' => ENV['SP_DB_HOST'],
   'DB_NAME' => ENV['SP_DB_NAME'],
-  'DB_USER' => ENV['SP_DB_USER'],
-  'DB_PASSWORD' => ENV['SP_DB_PASSWORD'],
+  #'DB_USER' => ENV['SP_DB_USER'],
+  #'DB_PASSWORD' => ENV['SP_DB_PASSWORD'],
   'DB_PORT' => ENV['SP_DB_PORT']
 }
 

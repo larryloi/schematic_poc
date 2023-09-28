@@ -6,11 +6,17 @@ LABEL maintainer="larry.loi@pm.me"
 #    rm -rf /var/cache/apk/*
 
 RUN apk update && \
-    apk add bash mysql-client git nodejs curl freetds-dev build-base mariadb-connector-c-dev && \
+    apk add bash mysql-client git nodejs curl freetds-dev build-base mariadb-connector-c-dev openssl && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
-ADD . /app
+#ADD . /app
+ADD deploy /app/deploy
+ADD Gemfile /app
+ADD Makefile /app
+ADD Rakefile.rb /app
+ADD RELEASE /app
+ADD src /app/src
 
 ### bundle install 
 #RUN /bin/bash -l -c "bundle install"
@@ -23,6 +29,5 @@ RUN bundle install
 ENTRYPOINT ["/bin/bash", "-c"]
 # CMD ["rake", "db:migrate"]
 # CMD ["sleep", "infinity"]
-
 
 LABEL application=schematic

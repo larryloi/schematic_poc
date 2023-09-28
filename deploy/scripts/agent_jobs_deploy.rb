@@ -8,8 +8,8 @@ job_env = {
   'DB_ADAPTER' => 'tinytds',
   'DB_HOST' => ENV['JOB_DB_HOST'],
   'DB_NAME' => 'msdb',
-  'DB_USER' => ENV['JOB_DB_USER'],
-  'DB_PASSWORD' => ENV['JOB_DB_PASSWORD'],
+  #'DB_USER' => ENV['JOB_DB_USER'],
+  #'DB_PASSWORD' => ENV['JOB_DB_PASSWORD'],
   'DB_PORT' => ENV['JOB_DB_PORT']
 }
 
