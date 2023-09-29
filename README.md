@@ -574,19 +574,20 @@ This guide provides detailed steps for setting up a Docker Desktop environment o
 3. **Enable Virtual Machine Platform:** In the same PowerShell window, run: 
    
     ```dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart```
-4. **Set WSL2 as Default:** In the same PowerShell window, run:
 
-    ```wsl --set-default-version 2```
-
-5. **Install a Linux Distribution:**
+4. **Install a Linux Distribution:**
    
    a. Visit the Microsoft Store, search for your preferred Linux distribution (like Ubuntu), and click Install. 
 
     b. by command: list availabe distribution; and install by specific distribution. 
     
-    ```wsl —list —online```
+    ```wsl —-list —-online```
 
-    ```wsl —install -d Ubuntu-22.04```
+    ```wsl —-install -d Ubuntu-22.04```
+   
+5. **Set WSL2 as Default:** In the same PowerShell window, run:
+
+    ```wsl --set-default-version 2```
 
 ### Install Docker Desktop
 1. **Check System Requirements:** Make sure your system meets the requirements for Docker Desktop.
