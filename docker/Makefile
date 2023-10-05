@@ -45,7 +45,7 @@ run: concat_env_files
 bash: concat_env_files
 	${INFO} "Login to container."
 #	docker run --rm -it --env-file $(COMBINED_ENV_FILE) -v $(APP_SRC_PATH):$(WORKDIR) $(IMAGE):$(TAG) /bin/bash
-	docker-compose exec app /bin/bash
+	docker-compose exec -u ds app /bin/bash
 
 #: Remove docker images
 rmi:

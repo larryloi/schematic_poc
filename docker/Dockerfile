@@ -6,11 +6,13 @@ LABEL maintainer="larry.loi@pm.me"
 #    rm -rf /var/cache/apk/*
 
 RUN apk update && \
-    apk add bash mysql-client git nodejs curl freetds-dev build-base mariadb-connector-c-dev openssl && \
+    apk add bash git nodejs curl freetds-dev build-base openssl && \
     rm -rf /var/cache/apk/*
 
+RUN adduser -u 1001 -G users -D ds
+USER ds
+
 WORKDIR /app
-#ADD . /app
 ADD deploy /app/deploy
 ADD Gemfile /app
 ADD Makefile /app
@@ -22,7 +24,7 @@ ADD src /app/src
 #RUN /bin/bash -l -c "bundle install"
 #RUN /bin/bash -l -c "bundle install --without development"
 RUN bundle config build.tiny_tds --with-freetds-dir=/usr/local
-RUN bundle install
+RUN bundle install --without development test
 
 
 # CMD $REL_PATH/start-archive.sh
