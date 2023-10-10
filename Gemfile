@@ -5,7 +5,7 @@ gem "standard", "~> 1.3"
 gem "stringio", "3.0.4"
 gem "psych",  "5.0.1"
 
-#gem "mysql2", "~> 0.5"
+gem "mysql2", "~> 0.5"
 gem "sysrandom"
 gem "sequel", "~> 5.73"
 gem "tiny_tds", "= 2.1.5"
