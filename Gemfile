@@ -7,7 +7,7 @@ gem "psych",  "5.0.1"
 
 #gem "mysql2", "~> 0.5"
 gem "sysrandom"
-gem "sequel", "~> 5.0"
+gem "sequel", "~> 5.73"
 gem "tiny_tds", "= 2.1.5"
 gem "open3", "~> 0.1"
 #gem "jwt", "~> 2.7"

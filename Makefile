@@ -8,7 +8,7 @@
 
 
 # Directory containing the job directories
-  JOBS_DIR := $(realpath ../deploy/jobs)
+  JOBS_DIR := $(realpath /app/deploy/jobs)
 
 # Temporary file to hold the combined environment variables
   COMBINED_ENV_FILE := combined.env
@@ -18,9 +18,21 @@ help:
 	@grep '^[^#[:space:]].*:' Makefile
 
 
+# Check if JOBS_DIR exists and is not empty
+check_jobs_dir:
+	${INFO} "Checking job config paths ..."
+	@if [ ! -d "$(JOBS_DIR)" ]; then \
+		echo "Error: JOBS_DIR $(JOBS_DIR) does not exist"; \
+		exit 1; \
+	fi
+	@if [ -z "$(shell ls -A $(JOBS_DIR))" ]; then \
+		echo "Error: JOBS_DIR $(JOBS_DIR) is empty"; \
+		exit 1; \
+	fi
+
 #: Concatenate all .env files in the directory into one file
-concat_env_files:
-	@echo "Concatenating environment files..."
+concat_env_files: check_jobs_dir
+	${INFO} "Concatenating environment files..."
 	@rm -f $(COMBINED_ENV_FILE)
 	@find $(JOBS_DIR) -name '*.env' -exec cat {} \; > $(COMBINED_ENV_FILE)
 

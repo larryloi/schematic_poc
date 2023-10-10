@@ -15,7 +15,7 @@ def decrypt_credentials
   passphrase = '3aCddqRucVxu2Ub3WqP2g5mziiYb'
 
   decrypted_credentials, status = Open3.capture2(
-    'openssl', 'rsautl', '-decrypt',
+    'openssl', 'pkeyutl', '-decrypt',
     '-inkey', private_key_path,
     '-in', encrypted_credentials_path,
     '-passin', "pass:#{passphrase}"

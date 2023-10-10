@@ -1,4 +1,4 @@
-FROM ruby:2.6.10-alpine
+FROM ruby:3.2.2-alpine
 LABEL maintainer="larry.loi@pm.me"
 
 #RUN apk update && \
@@ -6,7 +6,7 @@ LABEL maintainer="larry.loi@pm.me"
 #    rm -rf /var/cache/apk/*
 
 RUN apk update && \
-    apk add bash git nodejs curl freetds-dev build-base openssl && \
+    apk add bash git curl freetds-dev build-base openssl && \
     rm -rf /var/cache/apk/*
 
 RUN adduser -u 1001 -G users -D ds

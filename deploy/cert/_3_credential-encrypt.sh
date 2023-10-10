@@ -9,5 +9,6 @@ echo -n "Enter password: "
 read -s password
 
 # Encrypt the credentials
-echo "${username}:${password}" | openssl rsautl -encrypt -inkey ./keys/pubkey.pem -pubin -out ./keys/encrypted_credentials.bin
+#echo "${username}:${password}" | openssl rsautl -encrypt -inkey ./keys/pubkey.pem -pubin -out ./keys/encrypted_credentials.bin
+echo "${username}:${password}" | openssl pkeyutl -encrypt -inkey ./keys/pubkey.pem -pubin -out ./keys/encrypted_credentials.bin
 
